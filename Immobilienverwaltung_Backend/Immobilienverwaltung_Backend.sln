@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35919.96
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Immobilienverwaltung_Backend", "Immobilienverwaltung_Backend.csproj", "{613EC110-764F-4C39-8752-FDDA40657229}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BE.Tests", "..\BE.Tests\BE.Tests.csproj", "{1E23A2DA-52FA-41FF-89B1-B4576303C355}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{613EC110-764F-4C39-8752-FDDA40657229}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{613EC110-764F-4C39-8752-FDDA40657229}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{613EC110-764F-4C39-8752-FDDA40657229}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{613EC110-764F-4C39-8752-FDDA40657229}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E23A2DA-52FA-41FF-89B1-B4576303C355}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E23A2DA-52FA-41FF-89B1-B4576303C355}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E23A2DA-52FA-41FF-89B1-B4576303C355}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E23A2DA-52FA-41FF-89B1-B4576303C355}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DEDDC1F0-55F5-47F4-8613-946E4F3266CE}
+	EndGlobalSection
+EndGlobal
