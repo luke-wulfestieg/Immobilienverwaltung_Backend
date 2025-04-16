@@ -1,15 +1,29 @@
-﻿using Immobilienverwaltung_Backend.Data;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
+﻿using BE.Application.Extensions;
+using BE.Infrastructure.Extensions;
+using BE.Infrastructure.Seeders;
+using Immobilienverwaltung_Backend.Middlewares;
+using Serilog;
+using Serilog.Events;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+//// Add services to the container.
+
+builder.Services.AddScoped<ErrorHandlingMiddleware>();
+builder.Services.AddScoped<RequestTimeLoggingMiddleware>();
 
 builder.Services.AddControllers();
+
+//Custom Builder
+builder.Services.AddApplication();
+builder.Services.AddInfrastructure(builder.Configuration);
+builder.Host.UseSerilog((context, config) =>
+{
+    config.ReadFrom.Configuration(context.Configuration);
+});
+
 builder.Services.AddAutoMapper(typeof(Program));
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -26,21 +40,13 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-var dbContext = app.Services.CreateScope().ServiceProvider.GetRequiredService<ApplicationDbContext>();
+var scope = app.Services.CreateScope();
+var seeder = scope.ServiceProvider.GetRequiredService<IRestaurantSeeder>();
+await seeder.Seed();
 
-try
-{
-    dbContext.Database.OpenConnection(); // Tries to open the connection
-    dbContext.Database.CloseConnection();
-    Console.WriteLine("✅ Database connection successful.");
-}
-catch (SqlException ex)
-{
-    Console.WriteLine("❌ Database connection failed:");
-    Console.WriteLine(ex.Message);
-    // Optional: throw here if you want to stop app startup
-    // throw;
-}
+app.UseMiddleware<ErrorHandlingMiddleware>();  
+app.UseMiddleware<RequestTimeLoggingMiddleware>();
+app.UseSerilogRequestLogging();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -51,7 +57,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("DEVELOP");
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseAuthorization();
 

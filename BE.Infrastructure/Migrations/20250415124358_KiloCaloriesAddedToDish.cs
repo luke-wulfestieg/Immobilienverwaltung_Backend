@@ -2,28 +2,27 @@
 
 #nullable disable
 
-namespace Immobilienverwaltung_Backend.Migrations
+namespace BE.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class haushaltoverviewID : Migration
+    public partial class KiloCaloriesAddedToDish : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<int>(
-                name: "ImmobilienOverviewId",
-                table: "ImmobilienHausgeld",
+                name: "KiloCalories",
+                table: "Dishes",
                 type: "int",
-                nullable: false,
-                defaultValue: 0);
+                nullable: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "ImmobilienOverviewId",
-                table: "ImmobilienHausgeld");
+                name: "KiloCalories",
+                table: "Dishes");
         }
     }
 }
