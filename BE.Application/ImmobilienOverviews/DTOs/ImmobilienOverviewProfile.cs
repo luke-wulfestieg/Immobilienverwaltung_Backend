@@ -9,15 +9,16 @@ namespace BE.Application.ImmobilienOverviews.DTOs
     {
         public ImmobilienOverviewProfile()
         {
-    
-            CreateMap<UpdateImmobilienOverviewCommand, ImmobilienOverview>();
 
-            CreateMap<CreateImmobilienOverviewCommand, ImmobilienOverview>();
+            CreateMap<CreateImmobilienOverviewCommand, ImmobilienOverview>()
+                .ForMember(dest => dest.ImmobilienType, opt => opt.Ignore())
+                .ForMember(dest => dest.ImmobilienHausgeld, opt => opt.Ignore());
 
-            CreateMap<ImmobilienOverview, ImmobilienOverviewDto>()
-                .ForMember(dest => dest.ImmobilienType, opt => opt.MapFrom(src => src.ImmobilienType))
-                .ForMember(dest => dest.ImmobilienHausgeld, opt => opt.MapFrom(src => src.ImmobilienHausgeld));
 
+            CreateMap<UpdateImmobilienOverviewCommand, ImmobilienOverview>()
+                .ForMember(dest => dest.ImmobilienType, opt => opt.Ignore());
+
+            CreateMap<ImmobilienOverview, ImmobilienOverviewDto>();
         }
     }
 }

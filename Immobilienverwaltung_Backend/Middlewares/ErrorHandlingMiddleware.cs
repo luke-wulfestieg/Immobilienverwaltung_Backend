@@ -1,5 +1,4 @@
-﻿
-using BE.Domain.Exceptions;
+﻿using BE.Domain.Exceptions;
 
 namespace Immobilienverwaltung_Backend.Middlewares
 {
@@ -17,6 +16,13 @@ namespace Immobilienverwaltung_Backend.Middlewares
                 await context.Response.WriteAsync(notFound.Message);
 
                 logger.LogWarning(notFound.Message);
+            }
+            catch (InvalidOperationException invalidOp)
+            {
+                context.Response.StatusCode = 409;
+                await context.Response.WriteAsync(invalidOp.Message);
+
+                logger.LogWarning(invalidOp.Message);
             }
             catch (Exception ex) 
             {

@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BE.Application.ImmobilienTypes.DTOs;
-using MediatR;
+﻿using MediatR;
 
 namespace BE.Application.ImmobilienOverviews.Commands.UpdateOverviewById
 {
     public class UpdateImmobilienOverviewCommand : IRequest
     {
-        public int Id { get; set; }  // Added Id property to identify the overview
+        public int Id { get; set; }
         public string ImmobilienName { get; set; }
-        public ImmobilienTypeDto ImmobilienType { get; set; }
+        public int ImmobilienTypeId { get; set; }
         public uint Kaufpreis { get; set; }
         public decimal ZimmerAnzahl { get; set; }
         public double Wohnflaeche { get; set; }

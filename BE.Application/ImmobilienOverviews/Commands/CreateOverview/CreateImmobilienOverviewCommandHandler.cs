@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using BE.Domain.Entities;
 using BE.Domain.Exceptions;
 using BE.Domain.Repositories;
@@ -23,30 +18,35 @@ namespace BE.Application.ImmobilienOverviews.Commands.CreateOverview
         public async Task<int> Handle(CreateImmobilienOverviewCommand request, CancellationToken cancellationToken)
         {
             logger.LogInformation("Creating ImmobilienOverview {ImmobilienOverview}", request);
-
-            // Check if ImmobilienType exists
             var type = await typeRepository.GetByIdAsync(request.ImmobilienTypeId);
-            if (type == null)
+            
+            if (type is null)
             {
                 throw new NotFoundException(nameof(ImmobilienType), request.ImmobilienTypeId.ToString());
             }
 
-            // Check if ImmobilienHausgeld exists
-            var hausgeld = await hausgeldRepository.GetByIdAsync(request.ImmobilienHausgeldId);
-            if (hausgeld == null)
-            {
-                throw new NotFoundException(nameof(ImmobilienHausgeld), request.ImmobilienHausgeldId.ToString());
-            }
-
-            // Map the command to the entity
             var overview = mapper.Map<ImmobilienOverview>(request);
-
-            // Set the ImmobilienType and Hausgeld as navigation properties
             overview.ImmobilienType = type;
-            overview.ImmobilienHausgeld = hausgeld;
+            var overviewId = await overviewRepository.Create(overview);
 
-            // Save the new entity
-            return await overviewRepository.Create(overview);
+            var hausgeld = request.ImmobilienHausgeld != null
+                ? mapper.Map<ImmobilienHausgeld>(request.ImmobilienHausgeld)
+                : new ImmobilienHausgeld
+                {
+                    HausgeldProQuadratmeter = 3,
+                    HausgeldProMonat = 0,
+                    HausgeldProJahr = 0,
+                    UmlagefaehigesHausgeldInProzent = 60,
+                    UmlagefaehigesHausgeldProMonat = 0,
+                    UmlagefaehigesHausgeldProJahr = 0,
+                    NichtUmlagefaehigesHausgeldInProzent = 40,
+                    NichtUmlagefaehigesHausgeldProMonat = 0,
+                    NichtUmlagefaehigesHausgeldProJahr = 0,
+                };
+            hausgeld.ImmobilienOverviewId = overviewId;
+            await hausgeldRepository.Create(hausgeld);
+
+            return overviewId;
         }
     }
 }

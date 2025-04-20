@@ -20,7 +20,14 @@ namespace Immobilienverwaltung_Backend.Controllers
             _mediator = mediator;
         }
 
-        // Get all ImmobilienOverview
+        [HttpPost]
+        public async Task<IActionResult> CreateImmobilienOverview(CreateImmobilienOverviewCommand command)
+        {
+            int id = await _mediator.Send(command);
+
+            return CreatedAtAction(nameof(GetById), new { id }, null);
+        }
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ImmobilienOverviewDto>>> GetAll()
         {
@@ -28,40 +35,29 @@ namespace Immobilienverwaltung_Backend.Controllers
             return Ok(overviews);
         }
 
-        // Get an ImmobilienOverview by ID
-        [HttpGet("{id}")]
-        public async Task<ActionResult<ImmobilienOverviewDto>> GetById([FromRoute] int id)
+        [HttpGet("{overviewId}")]
+        public async Task<ActionResult<ImmobilienOverviewDto>> GetById([FromRoute] int overviewId)
         {
-            var result = await _mediator.Send(new GetImmobilienOverviewByIdCommand(id));
+            var result = await _mediator.Send(new GetImmobilienOverviewByIdCommand(overviewId));
             return Ok(result);
         }
 
-        // Create a new ImmobilienOverview
-        [HttpPost]
-        public async Task<IActionResult> CreateImmobilienOverview(CreateImmobilienOverviewCommand command)
-        {
-            int id = await _mediator.Send(command);
-            return CreatedAtAction(nameof(GetById), new { id }, null);
-        }
-
-        // Delete an ImmobilienOverview by ID
-        [HttpDelete("{id}")]
+        [HttpPatch("{overviewId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> DeleteById([FromRoute] int id)
+        public async Task<IActionResult> UpdateById([FromRoute] int overviewId, UpdateImmobilienOverviewCommand command)
         {
-            await _mediator.Send(new DeleteImmobilienOverviewByIdCommand(id));
+            command.Id = overviewId;
+            await _mediator.Send(command);
             return NoContent();
         }
 
-        // Update an existing ImmobilienOverview by ID
-        [HttpPatch("{id}")]
+        [HttpDelete("{overviewId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> UpdateById([FromRoute] int id, UpdateImmobilienOverviewCommand command)
+        public async Task<IActionResult> DeleteById([FromRoute] int overviewId)
         {
-            command.Id = id;
-            await _mediator.Send(command);
+            await _mediator.Send(new DeleteImmobilienOverviewByIdCommand(overviewId));
             return NoContent();
         }
     }

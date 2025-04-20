@@ -36,6 +36,10 @@ namespace BE.Infrastructure.Repositories
             return type;
         }
 
+        public async Task<bool> IsInUseAsync(int id)
+        {
+            return await dbContext.ImmobilienOverviews.AnyAsync(i => i.ImmobilienType.Id == id);
+        }
         public async Task SaveChanges()
         {
             await dbContext.SaveChangesAsync();

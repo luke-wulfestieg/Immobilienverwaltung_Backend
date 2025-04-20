@@ -16,6 +16,7 @@ namespace BE.Application.ImmoilienHausgelder.DTOs
 
             CreateMap<ImmobilienHausgeld, ImmobilienHausgeldDto>();
 
+            CreateMap<ImmobilienHausgeldDto, ImmobilienHausgeld>();
         }
     }
 }

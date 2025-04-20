@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Immobilienverwaltung_Backend.Controllers
 {
     [ApiController]
-    [Route("api/immobilien-type")]
+    [Route("api/overview/immobilien-type")]
     public class ImmobilienTypeController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -20,7 +20,13 @@ namespace Immobilienverwaltung_Backend.Controllers
             _mediator = mediator;
         }
 
-        // Get all Immobilien Types
+        [HttpPost]
+        public async Task<IActionResult> CreateImmobilienType([FromBody] CreateImmobilienTypeCommand command)
+        {
+            int id = await _mediator.Send(command);
+            return CreatedAtAction(nameof(GetById), new { id }, null);
+        }
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ImmobilienTypeDto>>> GetAll()
         {
@@ -28,11 +34,10 @@ namespace Immobilienverwaltung_Backend.Controllers
             return Ok(types);
         }
 
-        // Get an Immobilien Type by ID
-        [HttpGet("{id}")]
-        public async Task<ActionResult<ImmobilienTypeDto>> GetById([FromRoute] int id)
+        [HttpGet("{typeId}")]
+        public async Task<ActionResult<ImmobilienTypeDto>> GetById([FromRoute] int typeId)
         {
-            var result = await _mediator.Send(new GetImmobilienTypesByIdCommand(id));
+            var result = await _mediator.Send(new GetImmobilienTypesByIdCommand(typeId));
 
             if (result == null)
             {
@@ -42,33 +47,23 @@ namespace Immobilienverwaltung_Backend.Controllers
             return Ok(result);
         }
 
-        // Create a new Immobilien Type
-        [HttpPost]
-        public async Task<IActionResult> CreateImmobilienType([FromBody] CreateImmobilienTypeCommand command)
-        {
-            int id = await _mediator.Send(command);
-            return CreatedAtAction(nameof(GetById), new { id }, null);
-        }
-
-        // Delete an Immobilien Type by ID
-        [HttpDelete("{id}")]
+        [HttpPatch("{typeId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> DeleteById([FromRoute] int id)
+        public async Task<IActionResult> UpdateById([FromRoute] int typeId, [FromBody] UpdateImmobilienTypeCommand command)
         {
-            await _mediator.Send(new DeleteImmobilienTypesByIdCommand(id));
+            command.Id = typeId;
+
+            await _mediator.Send(command);
             return NoContent();
         }
 
-        // Update an Immobilien Type by ID
-        [HttpPatch("{id}")]
+        [HttpDelete("{typeId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> UpdateById([FromRoute] int id, [FromBody] UpdateImmobilienTypeCommand command)
+        public async Task<IActionResult> DeleteById([FromRoute] int typeId)
         {
-            command.Id = id;
-
-            await _mediator.Send(command);
+            await _mediator.Send(new DeleteImmobilienTypesByIdCommand(typeId));
             return NoContent();
         }
     }

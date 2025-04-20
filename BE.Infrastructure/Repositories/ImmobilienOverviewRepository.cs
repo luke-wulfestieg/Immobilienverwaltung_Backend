@@ -23,7 +23,9 @@ namespace BE.Infrastructure.Repositories
 
         public async Task<IEnumerable<ImmobilienOverview>> GetAllAsync()
         {
-            var overviews = await dbContext.ImmobilienOverviews.ToListAsync();
+            var overviews = await dbContext.ImmobilienOverviews
+                .Include(o => o.ImmobilienType)
+                .Include(o => o.ImmobilienHausgeld).ToListAsync();
 
             return overviews;
         }

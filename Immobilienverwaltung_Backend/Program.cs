@@ -2,7 +2,6 @@
 using BE.Infrastructure.Extensions;
 using Immobilienverwaltung_Backend.Middlewares;
 using Serilog;
-using Serilog.Events;
 
 var builder = WebApplication.CreateBuilder(args);
 

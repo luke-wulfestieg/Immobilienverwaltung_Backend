@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using BE.Application.ImmobilienHausgelder.DTOs;
 using MediatR;
 
 namespace BE.Application.ImmobilienOverviews.Commands.CreateOverview
@@ -16,7 +12,7 @@ namespace BE.Application.ImmobilienOverviews.Commands.CreateOverview
         public double BruttoMietRendite { get; set; }
         public decimal ImmobilienUeberschuss { get; set; }
         public int ImmobilienTypeId { get; set; }
-        public int ImmobilienHausgeldId { get; set; }
+        public ImmobilienHausgeldDto? ImmobilienHausgeld { get; set; } = default!;
     }
 
 }

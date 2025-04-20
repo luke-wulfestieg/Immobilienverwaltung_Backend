@@ -13,33 +13,32 @@ namespace BE.Application.ImmobilienOverviews.Commands.UpdateOverviewById
         private readonly ILogger<UpdateImmobilienOverviewCommandHandler> _logger;
         private readonly IMapper _mapper;
         private readonly IImmobilienOverviewRepository _overviewRepository;
+        private readonly IImmobilienTypeRepository _typeRepository;
 
-        // Constructor with dependencies injected
         public UpdateImmobilienOverviewCommandHandler(
             ILogger<UpdateImmobilienOverviewCommandHandler> logger,
             IMapper mapper,
-            IImmobilienOverviewRepository overviewRepository)
+            IImmobilienOverviewRepository overviewRepository, 
+            IImmobilienTypeRepository typeRepository)
         {
             _logger = logger;
             _mapper = mapper;
             _overviewRepository = overviewRepository;
+            _typeRepository = typeRepository;
         }
 
         public async Task Handle(UpdateImmobilienOverviewCommand request, CancellationToken cancellationToken)
         {
-            // Retrieve the existing ImmobilienOverview by ID
-            var overview = await _overviewRepository.GetByIdAsync(request.Id);
+            var overview = await _overviewRepository.GetByIdAsync(request.Id)
+                ?? throw new NotFoundException(nameof(ImmobilienOverview), request.Id.ToString());
 
-            // If the ImmobilienOverview doesn't exist, throw a NotFoundException
-            if (overview == null)
-            {
-                throw new NotFoundException(nameof(ImmobilienOverview), request.Id.ToString());
-            }
-
-            // Map the updated values from the request to the existing overview entity
             _mapper.Map(request, overview);
 
-            // Save the updated overview to the repository
+            var type = await _typeRepository.GetByIdAsync(request.ImmobilienTypeId)
+                ?? throw new NotFoundException(nameof(ImmobilienType), request.ImmobilienTypeId.ToString());
+
+            overview.ImmobilienType = type;
+
             await _overviewRepository.SaveChanges();
         }
     }
