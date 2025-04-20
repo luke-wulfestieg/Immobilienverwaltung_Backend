@@ -1,7 +1,6 @@
 ﻿using BE.Domain.Repositories;
 using BE.Infrastructure.Persistence;
 using BE.Infrastructure.Repositories;
-using BE.Infrastructure.Seeders;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,7 +12,7 @@ namespace BE.Infrastructure.Extensions
         public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
             var connectionString = configuration.GetConnectionString("DefaultConnection");
-            services.AddDbContext<RestaurantsDbContext>(
+            services.AddDbContext<ImmobilienDbContext>(
                 options =>
                 {
                     options
@@ -21,9 +20,10 @@ namespace BE.Infrastructure.Extensions
                     .EnableSensitiveDataLogging();
                 });
 
-            services.AddScoped<IRestaurantSeeder, RestaurantSeeder>();
-            services.AddScoped<IRestaurantRepository, RestaurantsRepository>();
-            services.AddScoped<IDishesRepository, DishesRepository>();
+            services.AddScoped<IImmobilienOverviewRepository, ImmobilienOverviewRepository>();
+            services.AddScoped<IImmobilienTypeRepository, ImmobilienTypeRepository>();
+            services.AddScoped<IImmobilienHausgeldRepository, ImmobilienHausgeldRepository>();
+
         }
     }
 }

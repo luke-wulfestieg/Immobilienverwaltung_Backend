@@ -1,5 +1,4 @@
-﻿using BE.Application.Restaurants;
-using FluentValidation;
+﻿using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.Extensions.DependencyInjection;
 

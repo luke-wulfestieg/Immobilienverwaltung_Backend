@@ -1,6 +1,5 @@
 ﻿using BE.Application.Extensions;
 using BE.Infrastructure.Extensions;
-using BE.Infrastructure.Seeders;
 using Immobilienverwaltung_Backend.Middlewares;
 using Serilog;
 using Serilog.Events;
@@ -41,8 +40,8 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 var scope = app.Services.CreateScope();
-var seeder = scope.ServiceProvider.GetRequiredService<IRestaurantSeeder>();
-await seeder.Seed();
+//var seeder = scope.ServiceProvider.GetRequiredService<IRestaurantSeeder>();
+//await seeder.Seed();
 
 app.UseMiddleware<ErrorHandlingMiddleware>();  
 app.UseMiddleware<RequestTimeLoggingMiddleware>();
