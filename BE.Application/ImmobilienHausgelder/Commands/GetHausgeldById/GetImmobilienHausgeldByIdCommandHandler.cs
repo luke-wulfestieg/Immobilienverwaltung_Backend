@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
 using BE.Application.ImmobilienHausgelder.DTOs;
-using BE.Application.ImmobilienTypes.Commands.GetTypesById;
-using BE.Application.ImmobilienTypes.DTOs;
 using BE.Domain.Entities;
 using BE.Domain.Exceptions;
 using BE.Domain.Repositories;

@@ -2,6 +2,7 @@
 using BE.Application.ImmobilienHausgelder.Commands.DeleteHausgeld;
 using BE.Application.ImmobilienHausgelder.Commands.GetAllHausgeld;
 using BE.Application.ImmobilienHausgelder.Commands.GetHausgeldById;
+using BE.Application.ImmobilienHausgelder.Commands.GetHausgeldByOverviewId;
 using BE.Application.ImmobilienHausgelder.Commands.UpdateHausgeld;
 using BE.Application.ImmobilienHausgelder.DTOs;
 using MediatR;
@@ -20,14 +21,6 @@ namespace Immobilienverwaltung_Backend.Controllers
             _mediator = mediator;
         }
 
-        [HttpPost("{overviewId}/hausgeld")]
-        public async Task<IActionResult> Create([FromRoute] int overviewId, [FromBody] CreateImmobilienHausgeldCommand command)
-        {
-            command.ImmobilienOverviewId = overviewId;
-            int hausgeldId = await _mediator.Send(command);
-            return CreatedAtAction(nameof(GetById), new { overviewId, hausgeldId }, null);
-        }
-
         [HttpGet("hausgeld")]
         public async Task<ActionResult<IEnumerable<ImmobilienHausgeldDto>>> GetAll()
         {
@@ -35,11 +28,26 @@ namespace Immobilienverwaltung_Backend.Controllers
             return Ok(hausgeld);
         }
 
+        [HttpGet("{overviewId}/hausgeld")]
+        public async Task<ActionResult<ImmobilienHausgeldDto>> GetHausgeldByOverviewId([FromRoute] int overviewId)
+        {
+            var hausgeld = await _mediator.Send(new GetHausgeldByOverviewIdCommand(overviewId));
+            return hausgeld == null ? NotFound() : Ok(hausgeld);
+        }
+
         [HttpGet("hausgeld/{hausgeldId}")]
         public async Task<ActionResult<ImmobilienHausgeldDto>> GetById([FromRoute] int hausgeldId)
         {
-            var hausgeld = await _mediator.Send(new GetImmobilienHausgeldByIdCommand(null ,hausgeldId));
+            var hausgeld = await _mediator.Send(new GetImmobilienHausgeldByIdCommand(hausgeldId));
             return hausgeld == null ? NotFound() : Ok(hausgeld);
+        }
+
+        [HttpPost("{overviewId}/hausgeld")]
+        public async Task<IActionResult> Create([FromRoute] int overviewId, [FromBody] CreateImmobilienHausgeldCommand command)
+        {
+            command.ImmobilienOverviewId = overviewId;
+            int hausgeldId = await _mediator.Send(command);
+            return CreatedAtAction(nameof(GetById), new { hausgeldId }, null);
         }
 
         [HttpPatch("hausgeld/{hausgeldId}")]

@@ -20,14 +20,6 @@ namespace Immobilienverwaltung_Backend.Controllers
             _mediator = mediator;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateImmobilienOverview(CreateImmobilienOverviewCommand command)
-        {
-            int id = await _mediator.Send(command);
-
-            return CreatedAtAction(nameof(GetById), new { id }, null);
-        }
-
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ImmobilienOverviewDto>>> GetAll()
         {
@@ -40,6 +32,14 @@ namespace Immobilienverwaltung_Backend.Controllers
         {
             var result = await _mediator.Send(new GetImmobilienOverviewByIdCommand(overviewId));
             return Ok(result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateImmobilienOverview(CreateImmobilienOverviewCommand command)
+        {
+            int id = await _mediator.Send(command);
+
+            return CreatedAtAction(nameof(GetById), new { overviewId = id }, null);
         }
 
         [HttpPatch("{overviewId}")]

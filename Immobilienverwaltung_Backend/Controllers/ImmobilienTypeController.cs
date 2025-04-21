@@ -20,13 +20,6 @@ namespace Immobilienverwaltung_Backend.Controllers
             _mediator = mediator;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateImmobilienType([FromBody] CreateImmobilienTypeCommand command)
-        {
-            int id = await _mediator.Send(command);
-            return CreatedAtAction(nameof(GetById), new { id }, null);
-        }
-
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ImmobilienTypeDto>>> GetAll()
         {
@@ -45,6 +38,13 @@ namespace Immobilienverwaltung_Backend.Controllers
             }
 
             return Ok(result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateImmobilienType([FromBody] CreateImmobilienTypeCommand command)
+        {
+            int id = await _mediator.Send(command);
+            return CreatedAtAction(nameof(GetById), new { typeId = id }, null);
         }
 
         [HttpPatch("{typeId}")]
