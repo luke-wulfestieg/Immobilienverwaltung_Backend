@@ -29,19 +29,17 @@ namespace BE.Application.ImmobilienOverviews.Commands.CreateOverview
             overview.ImmobilienType = type;
             var overviewId = await overviewRepository.Create(overview);
 
+            decimal HausgeldProMonat = 3m * Convert.ToDecimal(overview.Wohnflaeche);
+            decimal UmlagefaehigProMonat = 0.6m * HausgeldProMonat;
+            decimal NichtUmlagefaehigProMonat = 0.4m * HausgeldProMonat;
+
             var hausgeld = request.ImmobilienHausgeld != null
                 ? mapper.Map<ImmobilienHausgeld>(request.ImmobilienHausgeld)
                 : new ImmobilienHausgeld
                 {
-                    HausgeldProQuadratmeter = 3,
-                    HausgeldProMonat = 0,
-                    HausgeldProJahr = 0,
-                    UmlagefaehigesHausgeldInProzent = 60,
-                    UmlagefaehigesHausgeldProMonat = 0,
-                    UmlagefaehigesHausgeldProJahr = 0,
-                    NichtUmlagefaehigesHausgeldInProzent = 40,
-                    NichtUmlagefaehigesHausgeldProMonat = 0,
-                    NichtUmlagefaehigesHausgeldProJahr = 0,
+                    Hausgeld = new QuadratmeterMonatJahr(3, HausgeldProMonat, (HausgeldProMonat * 12)),
+                    UmlagefaehigesHausgeld = new ProzentMonatJahr(60, UmlagefaehigProMonat, (UmlagefaehigProMonat * 12)),
+                    NichtUmlagefaehigesHausgeld = new ProzentMonatJahr(40, NichtUmlagefaehigProMonat, (NichtUmlagefaehigProMonat * 12))
                 };
             hausgeld.ImmobilienOverviewId = overviewId;
             await hausgeldRepository.Create(hausgeld);

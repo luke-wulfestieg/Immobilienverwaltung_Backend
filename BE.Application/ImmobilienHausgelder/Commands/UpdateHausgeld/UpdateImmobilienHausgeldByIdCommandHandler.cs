@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using BE.Application.ImmobilienTypes.Commands.UpdateTypes;
 using BE.Domain.Entities;
 using BE.Domain.Exceptions;
 using BE.Domain.Repositories;
@@ -15,7 +14,7 @@ namespace BE.Application.ImmobilienHausgelder.Commands.UpdateHausgeld
     {
         public async Task Handle(UpdateImmobilienHausgeldByIdCommand request, CancellationToken cancellationToken)
         {
-            logger.LogInformation("Updating Hausgeld with ID: {Id}. New Values: HausgeldProMonat: {HausgeldProMonat}, HausgeldProJahr: {HausgeldProJahr} ...", request.Id, request.HausgeldProMonat, request.HausgeldProJahr);
+            logger.LogInformation("Updating Hausgeld with ID: {Id}. New Values: HausgeldProMonat: {HausgeldProMonat}, HausgeldProJahr: {HausgeldProJahr} ...", request.Id, request.Hausgeld.ProMonat, request.Hausgeld.ProJahr);
 
             var hausgeld = await hausgeldRepository.GetByIdAsync(request.Id);
 

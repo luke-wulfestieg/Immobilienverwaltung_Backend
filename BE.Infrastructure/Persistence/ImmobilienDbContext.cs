@@ -36,6 +36,10 @@ namespace BE.Infrastructure.Persistence
                 .HasForeignKey<ImmobilienHausgeld>(h => h.ImmobilienOverviewId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<ImmobilienHausgeld>().OwnsOne(h => h.Hausgeld);
+            modelBuilder.Entity<ImmobilienHausgeld>().OwnsOne(h => h.UmlagefaehigesHausgeld);
+            modelBuilder.Entity<ImmobilienHausgeld>().OwnsOne(h => h.NichtUmlagefaehigesHausgeld);
+
         }
     }
 }
