@@ -1,4 +1,6 @@
-﻿namespace BE.Domain.Entities
+﻿using BE.Domain.Entities.Hypothek;
+
+namespace BE.Domain.Entities
 {
     public class ImmobilienOverview
     {
@@ -11,5 +13,6 @@
         public double BruttoMietRendite { get; set; }
         public decimal ImmobilienUeberschuss { get; set; }
         public ImmobilienHausgeld ImmobilienHausgeld { get; set; }
+        public ImmobilienHypothek? ImmobilienHypothek { get; set; }
     }
 }
