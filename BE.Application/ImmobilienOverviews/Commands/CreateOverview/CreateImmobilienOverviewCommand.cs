@@ -1,4 +1,5 @@
 ﻿using BE.Application.ImmobilienHausgelder.DTOs;
+using BE.Application.ImmobilienHypotheken.DTOs;
 using MediatR;
 
 namespace BE.Application.ImmobilienOverviews.Commands.CreateOverview
@@ -13,6 +14,7 @@ namespace BE.Application.ImmobilienOverviews.Commands.CreateOverview
         public decimal ImmobilienUeberschuss { get; set; }
         public int ImmobilienTypeId { get; set; }
         public ImmobilienHausgeldDto? ImmobilienHausgeld { get; set; } = default!;
+        public ImmobilienHypothekDto? ImmobilienHypothek { get; set; } = default!;
     }
 
 }

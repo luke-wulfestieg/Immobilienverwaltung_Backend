@@ -12,7 +12,8 @@ namespace BE.Application.ImmobilienOverviews.DTOs
 
             CreateMap<CreateImmobilienOverviewCommand, ImmobilienOverview>()
                 .ForMember(dest => dest.ImmobilienType, opt => opt.Ignore())
-                .ForMember(dest => dest.ImmobilienHausgeld, opt => opt.Ignore());
+                .ForMember(dest => dest.ImmobilienHausgeld, opt => opt.Ignore())
+                .ForMember(dest => dest.ImmobilienHypothek, opt => opt.Ignore());
 
 
             CreateMap<UpdateImmobilienOverviewCommand, ImmobilienOverview>()
