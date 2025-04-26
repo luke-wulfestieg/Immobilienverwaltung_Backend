@@ -1,5 +1,8 @@
-﻿namespace BE.Domain.Entities
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace BE.Domain.Entities
 {
+    [Owned]
     public class ProzentMonatJahr
     {
         public ProzentMonatJahr(decimal inProzent, decimal proMonat, decimal proJahr)

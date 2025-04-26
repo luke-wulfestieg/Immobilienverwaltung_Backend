@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BE.Domain.Entities;
+using BE.Domain.Entities.Hypothek;
 using BE.Domain.Exceptions;
 using BE.Domain.Repositories;
 using MediatR;
@@ -12,7 +13,8 @@ namespace BE.Application.ImmobilienOverviews.Commands.CreateOverview
     IMapper mapper,
     IImmobilienOverviewRepository overviewRepository,
     IImmobilienTypeRepository typeRepository,
-    IImmobilienHausgeldRepository hausgeldRepository)
+    IImmobilienHausgeldRepository hausgeldRepository,
+    IImmobilienHypothekRepository hypothekRepository)
     : IRequestHandler<CreateImmobilienOverviewCommand, int>
     {
         public async Task<int> Handle(CreateImmobilienOverviewCommand request, CancellationToken cancellationToken)
@@ -29,6 +31,14 @@ namespace BE.Application.ImmobilienOverviews.Commands.CreateOverview
             overview.ImmobilienType = type;
             var overviewId = await overviewRepository.Create(overview);
 
+            await CreateDefaultHausgeld(request, overview, overviewId);
+            await CreateDefaultHypothek(request, overview, overviewId);
+            return overviewId;
+        }
+
+
+        private async Task<int> CreateDefaultHausgeld(CreateImmobilienOverviewCommand request, ImmobilienOverview overview, int overviewId)
+        {
             decimal HausgeldProMonat = 3m * Convert.ToDecimal(overview.Wohnflaeche);
             decimal UmlagefaehigProMonat = 0.6m * HausgeldProMonat;
             decimal NichtUmlagefaehigProMonat = 0.4m * HausgeldProMonat;
@@ -41,10 +51,74 @@ namespace BE.Application.ImmobilienOverviews.Commands.CreateOverview
                     UmlagefaehigesHausgeld = new ProzentMonatJahr(60, UmlagefaehigProMonat, (UmlagefaehigProMonat * 12)),
                     NichtUmlagefaehigesHausgeld = new ProzentMonatJahr(40, NichtUmlagefaehigProMonat, (NichtUmlagefaehigProMonat * 12))
                 };
-            hausgeld.ImmobilienOverviewId = overviewId;
-            await hausgeldRepository.Create(hausgeld);
+                hausgeld.ImmobilienOverviewId = overviewId;
 
-            return overviewId;
+            return await hausgeldRepository.Create(hausgeld);
         }
+
+        private async Task<int> CreateDefaultHypothek(CreateImmobilienOverviewCommand request, ImmobilienOverview overview, int overviewId)
+        {
+            var kaufpreis = Convert.ToDecimal(overview.Kaufpreis);
+            var kaufnebenkosten = new Kaufnebenkosten(
+                new ProzentBetrag(5m, kaufpreis * 0.05m),
+                new ProzentBetrag(1.5m, kaufpreis * 0.015m),
+                new ProzentBetrag(0.5m, kaufpreis * 0.005m),
+                new ProzentBetrag(3.57m, kaufpreis * 0.0357m),
+                new ProzentBetrag(1.43m, kaufpreis * 0.0143m));
+
+            var eigenkapital = new ProzentBetrag(25m, kaufpreis * 0.25m);
+            var darlehensbetrag = kaufpreis + kaufnebenkosten.Gesamtnebenkosten.Betrag - eigenkapital.Betrag;
+            var sollzinsbindung = 15;
+            var kreditbelastung = new Kreditbelastung(
+                new ProzentMonatJahr(4m, (darlehensbetrag * 0.04m) / 12, (darlehensbetrag * 0.04m)),
+                new ProzentMonatJahr(2m, (darlehensbetrag * 0.02m) / 12, (darlehensbetrag * 0.02m)),
+                new ProzentMonatJahr(0,0,0));
+
+            var restschuld = calculateDefaultRestschuld(darlehensbetrag, sollzinsbindung, kreditbelastung);
+
+            var hypothek = request.ImmobilienHypothek != null
+                ? mapper.Map<ImmobilienHypothek>(request.ImmobilienHypothek)
+                : new ImmobilienHypothek
+                {
+                    Kaufpreis = Convert.ToUInt32(kaufpreis),
+                    Kaufnebenkosten = kaufnebenkosten,
+                    Eigenkapital = eigenkapital,
+                    DarlehensBetrag = darlehensbetrag,
+                    Sollzinsbindung = sollzinsbindung,
+                    Kreditbelastung = kreditbelastung,
+                    Restschuld = restschuld
+                };
+            hypothek.ImmobilienOverviewId = overviewId;
+
+            return await hypothekRepository.Create(hypothek);
+        }
+
+        private decimal calculateDefaultRestschuld(decimal darlehensBetrag, int sollzinsbindung, Kreditbelastung kreditbelastung)
+        {
+            var restschuld = darlehensBetrag;
+            var kreditbelastungBetragProMonat = kreditbelastung.GesamtKreditbelastung.ProMonat;
+            var tilgungBetragProMonat = kreditbelastung.Tilgung.ProMonat;
+            var zinsenProzent = kreditbelastung.Zinsen.InProzent;
+            var zinsenBetragProMonat = kreditbelastung.Zinsen.ProMonat;
+            var sondertilgungBetragProJahr = kreditbelastung.Sondertilgung.ProJahr;
+            var sollzinsbindungMonate = sollzinsbindung * 12;
+
+            for (var m = 1; m <= sollzinsbindungMonate; m++)
+            {
+                zinsenBetragProMonat = ((zinsenProzent / 100) * restschuld) / 12;
+                tilgungBetragProMonat = kreditbelastungBetragProMonat - zinsenBetragProMonat;
+
+                if (m % 12 == 0)
+                {
+                    restschuld = restschuld - tilgungBetragProMonat - sondertilgungBetragProJahr;
+                }
+                else
+                {
+                    restschuld = restschuld - tilgungBetragProMonat;
+                }
+            }
+            return restschuld;
+        }
+
     }
 }

@@ -9,7 +9,8 @@ using Microsoft.Extensions.Logging;
 
 namespace BE.Application.ImmobilienHausgelder.Commands.GetHausgeldByOverviewId
 {
-    public class GetHausgeldByOverviewIdCommandHandler(ILogger<GetHausgeldByOverviewIdCommand> logger,
+    public class GetHausgeldByOverviewIdCommandHandler
+        (ILogger<GetHausgeldByOverviewIdCommandHandler> logger,
         IMapper mapper,
         IImmobilienHausgeldRepository hausgeldRepository,
         IImmobilienOverviewRepository overviewRepository) : IRequestHandler<GetHausgeldByOverviewIdCommand, ImmobilienHausgeldDto>

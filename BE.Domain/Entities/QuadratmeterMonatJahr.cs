@@ -1,5 +1,8 @@
-﻿namespace BE.Domain.Entities
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace BE.Domain.Entities
 {
+    [Owned]
     public class QuadratmeterMonatJahr
     {
         public QuadratmeterMonatJahr(decimal proQuadratmeter, decimal proMonat, decimal proJahr)

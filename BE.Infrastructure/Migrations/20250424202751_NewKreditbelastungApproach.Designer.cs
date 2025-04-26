@@ -3,6 +3,7 @@ using BE.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BE.Infrastructure.Migrations
 {
     [DbContext(typeof(ImmobilienDbContext))]
-    partial class ImmobilienDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250424202751_NewKreditbelastungApproach")]
+    partial class NewKreditbelastungApproach
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BE.Application.ImmobilienHausgelder.DTOs;
+﻿using BE.Application.ImmobilienHausgelder.DTOs;
+using BE.Application.ImmobilienHypotheken.DTOs;
 using BE.Application.ImmobilienTypes.DTOs;
-using BE.Domain.Entities;
 
 namespace BE.Application.ImmobilienOverviews.DTOs
 {
@@ -20,5 +15,6 @@ namespace BE.Application.ImmobilienOverviews.DTOs
         public double BruttoMietRendite { get; set; }
         public decimal ImmobilienUeberschuss { get; set; }
         public ImmobilienHausgeldDto ImmobilienHausgeld { get; set; }
+        public ImmobilienHypothekDto ImmobilienHypothek { get; set; }
     }
 }
