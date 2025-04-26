@@ -13,7 +13,7 @@
                 (zinsen.ProJahr + tilgung.ProJahr + sonderTilgung.ProJahr));
         }
 
-        protected Kreditbelastung(){}
+        public Kreditbelastung(){}
 
         public ProzentMonatJahr Zinsen { get; set; }
         public ProzentMonatJahr Tilgung { get; set; }

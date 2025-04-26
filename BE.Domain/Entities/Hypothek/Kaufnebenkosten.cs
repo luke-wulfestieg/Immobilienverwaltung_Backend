@@ -21,7 +21,7 @@
                 sicherheitspuffer.Betrag));
         }
 
-        protected Kaufnebenkosten() { }
+        public Kaufnebenkosten() { }
 
         public ProzentBetrag GrunderwerbSteuer { get; set; }
 
