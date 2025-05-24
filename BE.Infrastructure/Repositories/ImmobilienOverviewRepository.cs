@@ -26,7 +26,8 @@ namespace BE.Infrastructure.Repositories
             var overviews = await dbContext.ImmobilienOverviews
                 .Include(o => o.ImmobilienType)
                 .Include(o => o.ImmobilienHausgeld)
-                .Include(o => o.ImmobilienHypothek).ToListAsync();
+                .Include(o => o.ImmobilienHypothek)
+                .Include(o => o.BruttoMietendite).ToListAsync();
 
 
             return overviews;
@@ -38,6 +39,7 @@ namespace BE.Infrastructure.Repositories
                 .Include(r => r.ImmobilienType)
                 .Include(r => r.ImmobilienHausgeld)
                 .Include(r => r.ImmobilienHypothek)
+                .Include(o => o.BruttoMietendite)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             return overview;
