@@ -13,7 +13,7 @@ namespace BE.Domain.Entities
         public decimal ImmobilienUeberschuss { get; set; }
         public ImmobilienHausgeld ImmobilienHausgeld { get; set; }
         public ImmobilienHypothek ImmobilienHypothek { get; set; }
-        public Bruttomietrendite BruttoMietendite { get; set; }
+        public Bruttomietrendite Bruttomietrendite { get; set; }
 
     }
 }

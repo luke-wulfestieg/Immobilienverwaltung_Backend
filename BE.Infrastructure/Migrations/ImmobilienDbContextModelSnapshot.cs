@@ -29,7 +29,7 @@ namespace BE.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<double>("BruttoMietrendite")
+                    b.Property<double>("BruttomietrenditeBetrag")
                         .HasColumnType("float");
 
                     b.Property<int>("ImmobilienOverviewId")
@@ -49,7 +49,7 @@ namespace BE.Infrastructure.Migrations
                     b.HasIndex("ImmobilienOverviewId")
                         .IsUnique();
 
-                    b.ToTable("BruttoMietrenditen");
+                    b.ToTable("Bruttomietrenditen");
                 });
 
             modelBuilder.Entity("BE.Domain.Entities.Hypothek.ImmobilienHypothek", b =>
@@ -156,7 +156,7 @@ namespace BE.Infrastructure.Migrations
             modelBuilder.Entity("BE.Domain.Entities.Bruttomietrendite", b =>
                 {
                     b.HasOne("BE.Domain.Entities.ImmobilienOverview", "ImmobilienOverview")
-                        .WithOne("BruttoMietendite")
+                        .WithOne("Bruttomietrendite")
                         .HasForeignKey("BE.Domain.Entities.Bruttomietrendite", "ImmobilienOverviewId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -177,7 +177,7 @@ namespace BE.Infrastructure.Migrations
 
                             b1.HasKey("BruttomietrenditeId");
 
-                            b1.ToTable("BruttoMietrenditen");
+                            b1.ToTable("Bruttomietrenditen");
 
                             b1.WithOwner()
                                 .HasForeignKey("BruttomietrenditeId");
@@ -199,7 +199,7 @@ namespace BE.Infrastructure.Migrations
 
                             b1.HasKey("BruttomietrenditeId");
 
-                            b1.ToTable("BruttoMietrenditen");
+                            b1.ToTable("Bruttomietrenditen");
 
                             b1.WithOwner()
                                 .HasForeignKey("BruttomietrenditeId");
@@ -221,7 +221,7 @@ namespace BE.Infrastructure.Migrations
 
                             b1.HasKey("BruttomietrenditeId");
 
-                            b1.ToTable("BruttoMietrenditen");
+                            b1.ToTable("Bruttomietrenditen");
 
                             b1.WithOwner()
                                 .HasForeignKey("BruttomietrenditeId");
@@ -635,7 +635,7 @@ namespace BE.Infrastructure.Migrations
 
             modelBuilder.Entity("BE.Domain.Entities.ImmobilienOverview", b =>
                 {
-                    b.Navigation("BruttoMietendite")
+                    b.Navigation("Bruttomietrendite")
                         .IsRequired();
 
                     b.Navigation("ImmobilienHausgeld")

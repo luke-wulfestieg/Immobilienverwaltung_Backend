@@ -17,7 +17,7 @@ namespace BE.Application.Bruttomietrenditen.Commands.CreateBruttomietrendite
 
         public double KaufpreisFaktor { get; set; }
 
-        public double BruttoMietrendite { get; set; }
+        public double BruttomietrenditeBetrag { get; set; }
 
         public int ImmobilienOverviewId { get; set; }
     }

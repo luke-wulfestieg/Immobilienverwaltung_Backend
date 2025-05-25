@@ -14,7 +14,7 @@ namespace BE.Application.Bruttomietrenditen.Commands.UpdateBruttomietrendite
     {
         public async Task Handle(UpdateBruttomietrenditeByIdCommand request, CancellationToken cancellationToken)
         {
-            logger.LogInformation("Updating Hausgeld with ID: {Id}. New Values: Kaltmiete: {Kaltmiete}, Warmmiete: {Warmmiete}, BruttoMietrendite: {BruttoMietrendite} ...", request.Id, request.Kaltmiete, request.Warmmiete, request.BruttoMietrendite);
+            logger.LogInformation("Updating Hausgeld with ID: {Id}. New Values: Kaltmiete: {Kaltmiete}, Warmmiete: {Warmmiete}, BruttoMietrendite: {Bruttomietrendite} ...", request.Id, request.Kaltmiete, request.Warmmiete, request.BruttomietrenditeBetrag);
 
             var bruttomietrendite = await bruttomietrenditeRepository.GetByIdAsync(request.Id);
 

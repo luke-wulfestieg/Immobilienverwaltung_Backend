@@ -27,7 +27,7 @@ namespace BE.Infrastructure.Repositories
                 .Include(o => o.ImmobilienType)
                 .Include(o => o.ImmobilienHausgeld)
                 .Include(o => o.ImmobilienHypothek)
-                .Include(o => o.BruttoMietendite).ToListAsync();
+                .Include(o => o.Bruttomietrendite).ToListAsync();
 
 
             return overviews;
@@ -39,7 +39,7 @@ namespace BE.Infrastructure.Repositories
                 .Include(r => r.ImmobilienType)
                 .Include(r => r.ImmobilienHausgeld)
                 .Include(r => r.ImmobilienHypothek)
-                .Include(o => o.BruttoMietendite)
+                .Include(o => o.Bruttomietrendite)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             return overview;

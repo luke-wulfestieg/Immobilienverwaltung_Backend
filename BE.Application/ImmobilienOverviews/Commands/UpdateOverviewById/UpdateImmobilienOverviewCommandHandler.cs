@@ -64,8 +64,8 @@ namespace BE.Application.ImmobilienOverviews.Commands.UpdateOverviewById
             // Pass real object
             hypothek = UpdateHypothek(overview, hypothek);
 
-            var bruttomietrendite = await bruttomietrenditeRepository.GetByIdAsync(overview.BruttoMietendite.Id)
-            ?? throw new NotFoundException(nameof(Bruttomietrendite), overview.BruttoMietendite.Id.ToString());
+            var bruttomietrendite = await bruttomietrenditeRepository.GetByIdAsync(overview.Bruttomietrendite.Id)
+            ?? throw new NotFoundException(nameof(Bruttomietrendite), overview.Bruttomietrendite.Id.ToString());
 
             bruttomietrendite.Kaufpreis = overview.Kaufpreis;
             bruttomietrendite.Wohnflaeche = overview.Wohnflaeche;
@@ -82,7 +82,7 @@ namespace BE.Application.ImmobilienOverviews.Commands.UpdateOverviewById
             bruttomietrendite.Kaltmiete = new QuadratmeterMonatJahr(kaltmieteProQm, kaltmieteProMonat, kaltmieteProMonat * 12);
             bruttomietrendite.Warmmiete = new QuadratmeterMonatJahr(warmmieteProQM, warmmieteProMonat, warmmieteProMonat * 12);
             bruttomietrendite.KaufpreisFaktor = Convert.ToDouble(overview.Kaufpreis / (kaltmieteProMonat * 12));
-            bruttomietrendite.BruttoMietrendite = Convert.ToDouble((kaltmieteProMonat * 12) / overview.Kaufpreis) * 100;
+            bruttomietrendite.BruttomietrenditeBetrag = Convert.ToDouble((kaltmieteProMonat * 12) / overview.Kaufpreis) * 100;
 
 
 

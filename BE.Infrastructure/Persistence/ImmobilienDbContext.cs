@@ -10,7 +10,7 @@ namespace BE.Infrastructure.Persistence
         internal DbSet<ImmobilienType> ImmobilienTypes { get; set; }
         internal DbSet<ImmobilienHausgeld> ImmobilienHausgeld { get; set; }
         internal DbSet<ImmobilienHypothek> ImmobilienHypotheken { get; set; }
-        internal DbSet<Bruttomietrendite> BruttoMietrenditen { get; set; }
+        internal DbSet<Bruttomietrendite> Bruttomietrenditen { get; set; }
 
         public ImmobilienDbContext(DbContextOptions<ImmobilienDbContext> options)
             : base(options)
@@ -43,7 +43,7 @@ namespace BE.Infrastructure.Persistence
 
             // Relationship: ImmobilienOverview ↔ Bruttomietrendite (one-to-one)
             modelBuilder.Entity<ImmobilienOverview>()
-                .HasOne(o => o.BruttoMietendite)
+                .HasOne(o => o.Bruttomietrendite)
                 .WithOne(h => h.ImmobilienOverview)
                 .HasForeignKey<Bruttomietrendite>(h => h.ImmobilienOverviewId)
                 .OnDelete(DeleteBehavior.Cascade);

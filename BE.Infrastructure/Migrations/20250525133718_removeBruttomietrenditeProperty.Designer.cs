@@ -159,7 +159,7 @@ namespace BE.Infrastructure.Migrations
             modelBuilder.Entity("BE.Domain.Entities.Bruttomietrendite", b =>
                 {
                     b.HasOne("BE.Domain.Entities.ImmobilienOverview", "ImmobilienOverview")
-                        .WithOne("BruttoMietendite")
+                        .WithOne("Bruttomietrendite")
                         .HasForeignKey("BE.Domain.Entities.Bruttomietrendite", "ImmobilienOverviewId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -638,7 +638,7 @@ namespace BE.Infrastructure.Migrations
 
             modelBuilder.Entity("BE.Domain.Entities.ImmobilienOverview", b =>
                 {
-                    b.Navigation("BruttoMietendite")
+                    b.Navigation("Bruttomietrendite")
                         .IsRequired();
 
                     b.Navigation("ImmobilienHausgeld")

@@ -14,7 +14,7 @@ namespace BE.Application.ImmobilienOverviews.DTOs
                 .ForMember(dest => dest.ImmobilienType, opt => opt.Ignore())
                 .ForMember(dest => dest.ImmobilienHausgeld, opt => opt.Ignore())
                 .ForMember(dest => dest.ImmobilienHypothek, opt => opt.Ignore())
-                .ForMember(dest => dest.BruttoMietendite, opt => opt.Ignore());
+                .ForMember(dest => dest.Bruttomietrendite, opt => opt.Ignore());
 
 
             CreateMap<UpdateImmobilienOverviewCommand, ImmobilienOverview>()
