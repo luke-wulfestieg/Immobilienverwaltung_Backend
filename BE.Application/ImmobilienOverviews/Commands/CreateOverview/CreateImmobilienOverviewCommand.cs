@@ -1,4 +1,5 @@
-﻿using BE.Application.ImmobilienHausgelder.DTOs;
+﻿using BE.Application.Bruttomietrenditen.DTOs;
+using BE.Application.ImmobilienHausgelder.DTOs;
 using BE.Application.ImmobilienHypotheken.DTOs;
 using MediatR;
 
@@ -10,11 +11,11 @@ namespace BE.Application.ImmobilienOverviews.Commands.CreateOverview
         public uint Kaufpreis { get; set; }
         public decimal ZimmerAnzahl { get; set; }
         public double Wohnflaeche { get; set; }
-        public double BruttoMietRendite { get; set; }
         public decimal ImmobilienUeberschuss { get; set; }
         public int ImmobilienTypeId { get; set; }
         public ImmobilienHausgeldDto? ImmobilienHausgeld { get; set; } = default!;
         public ImmobilienHypothekDto? ImmobilienHypothek { get; set; } = default!;
+        public BruttomietrenditeDto? Bruttomietrendite { get; set; } = default!;
     }
 
 }

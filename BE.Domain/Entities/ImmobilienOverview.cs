@@ -10,7 +10,6 @@ namespace BE.Domain.Entities
         public uint Kaufpreis { get; set; }
         public decimal ZimmerAnzahl { get; set; }
         public double Wohnflaeche { get; set; }
-        public double BruttoMietRendite { get; set; }
         public decimal ImmobilienUeberschuss { get; set; }
         public ImmobilienHausgeld ImmobilienHausgeld { get; set; }
         public ImmobilienHypothek ImmobilienHypothek { get; set; }

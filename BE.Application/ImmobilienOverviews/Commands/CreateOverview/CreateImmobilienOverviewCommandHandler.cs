@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BE.Application.Bruttomietrenditen.Commands.CreateBruttomietrendite;
 using BE.Domain.Entities;
 using BE.Domain.Entities.Hypothek;
 using BE.Domain.Exceptions;
@@ -14,7 +15,8 @@ namespace BE.Application.ImmobilienOverviews.Commands.CreateOverview
     IImmobilienOverviewRepository overviewRepository,
     IImmobilienTypeRepository typeRepository,
     IImmobilienHausgeldRepository hausgeldRepository,
-    IImmobilienHypothekRepository hypothekRepository)
+    IImmobilienHypothekRepository hypothekRepository,
+    IBruttomietrenditeRepository bruttomietrenditeRepository)
     : IRequestHandler<CreateImmobilienOverviewCommand, int>
     {
         public async Task<int> Handle(CreateImmobilienOverviewCommand request, CancellationToken cancellationToken)
@@ -33,9 +35,36 @@ namespace BE.Application.ImmobilienOverviews.Commands.CreateOverview
 
             await CreateDefaultHausgeld(request, overview, overviewId);
             await CreateDefaultHypothek(request, overview, overviewId);
+            await CreateDefaultBruttomietrendite(request, overview, overviewId);
             return overviewId;
         }
 
+        private async Task<int> CreateDefaultBruttomietrendite(CreateImmobilienOverviewCommand request, ImmobilienOverview overview, int overviewId)
+        {
+            decimal HausgeldProMonat = 3m * Convert.ToDecimal(overview.Wohnflaeche);
+            decimal UmlagefaehigProMonat = 0.6m * HausgeldProMonat;
+
+            decimal KaltmieteProMonat = Convert.ToDecimal(6 * overview.Wohnflaeche);
+            decimal WarmmieteProMonat = UmlagefaehigProMonat + Convert.ToDecimal(overview.Wohnflaeche);
+
+            decimal WarmmieteQM = WarmmieteProMonat / Convert.ToDecimal(overview.Wohnflaeche);
+
+            var hausgeld = request.Bruttomietrendite != null
+                ? mapper.Map<Bruttomietrendite>(request.Bruttomietrendite)
+                : new Bruttomietrendite
+                {
+                    Kaufpreis = overview.Kaufpreis,
+                    Wohnflaeche = overview.Wohnflaeche,
+                    UmlagefaehigesHausgeld = new ProzentMonatJahr(60, UmlagefaehigProMonat, (UmlagefaehigProMonat * 12)),
+                    Kaltmiete = new QuadratmeterMonatJahr(Convert.ToDecimal(6), KaltmieteProMonat, KaltmieteProMonat * 12),
+                    Warmmiete = new QuadratmeterMonatJahr(WarmmieteQM, WarmmieteProMonat, WarmmieteProMonat * 12),
+                    KaufpreisFaktor = Convert.ToDouble(overview.Kaufpreis / KaltmieteProMonat * 12),
+                    BruttoMietrendite = Convert.ToDouble((KaltmieteProMonat * 12 / overview.Kaufpreis) * 100) 
+                };
+            hausgeld.ImmobilienOverviewId = overviewId;
+
+            return await bruttomietrenditeRepository.Create(hausgeld);
+        }
 
         private async Task<int> CreateDefaultHausgeld(CreateImmobilienOverviewCommand request, ImmobilienOverview overview, int overviewId)
         {
@@ -119,6 +148,8 @@ namespace BE.Application.ImmobilienOverviews.Commands.CreateOverview
             }
             return restschuld;
         }
+
+
 
     }
 }

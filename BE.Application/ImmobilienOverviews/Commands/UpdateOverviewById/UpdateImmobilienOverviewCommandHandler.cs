@@ -14,7 +14,8 @@ namespace BE.Application.ImmobilienOverviews.Commands.UpdateOverviewById
             IImmobilienOverviewRepository overviewRepository,
             IImmobilienTypeRepository typeRepository,
             IImmobilienHausgeldRepository hausgeldRepository,
-            IImmobilienHypothekRepository hypothekRepository)
+            IImmobilienHypothekRepository hypothekRepository,
+            IBruttomietrenditeRepository bruttomietrenditeRepository)
         : IRequestHandler<UpdateImmobilienOverviewCommand>
     {
         public async Task Handle(UpdateImmobilienOverviewCommand request, CancellationToken cancellationToken)
@@ -63,10 +64,33 @@ namespace BE.Application.ImmobilienOverviews.Commands.UpdateOverviewById
             // Pass real object
             hypothek = UpdateHypothek(overview, hypothek);
 
+            var bruttomietrendite = await bruttomietrenditeRepository.GetByIdAsync(overview.BruttoMietendite.Id)
+            ?? throw new NotFoundException(nameof(Bruttomietrendite), overview.BruttoMietendite.Id.ToString());
+
+            bruttomietrendite.Kaufpreis = overview.Kaufpreis;
+            bruttomietrendite.Wohnflaeche = overview.Wohnflaeche;
+            bruttomietrendite.UmlagefaehigesHausgeld = new ProzentMonatJahr(
+                hausgeld.UmlagefaehigesHausgeld.InProzent,
+                umlagefaehigProMonat,
+                umlagefaehigProMonat * 12
+            );
+            var kaltmieteProQm = bruttomietrendite.Kaltmiete.ProQuadratmeter;
+            var kaltmieteProMonat = kaltmieteProQm * Convert.ToDecimal(overview.Wohnflaeche);
+
+            var warmmieteProMonat = kaltmieteProMonat + umlagefaehigProMonat;
+            var warmmieteProQM = warmmieteProMonat / Convert.ToDecimal(overview.Wohnflaeche);
+            bruttomietrendite.Kaltmiete = new QuadratmeterMonatJahr(kaltmieteProQm, kaltmieteProMonat, kaltmieteProMonat * 12);
+            bruttomietrendite.Warmmiete = new QuadratmeterMonatJahr(warmmieteProQM, warmmieteProMonat, warmmieteProMonat * 12);
+            bruttomietrendite.KaufpreisFaktor = Convert.ToDouble(overview.Kaufpreis / (kaltmieteProMonat * 12));
+            bruttomietrendite.BruttoMietrendite = Convert.ToDouble((kaltmieteProMonat * 12) / overview.Kaufpreis) * 100;
+
+
+
 
             // Save changes to both
             await hypothekRepository.SaveChanges();
             await hausgeldRepository.SaveChanges();
+            await bruttomietrenditeRepository.SaveChanges();
             await overviewRepository.SaveChanges();
 
         }

@@ -12,7 +12,6 @@ namespace BE.Application.ImmobilienOverviews.DTOs
         public uint Kaufpreis { get; set; }
         public decimal ZimmerAnzahl { get; set; }
         public double Wohnflaeche { get; set; }
-        public double BruttoMietRendite { get; set; }
         public decimal ImmobilienUeberschuss { get; set; }
         public ImmobilienHausgeldDto ImmobilienHausgeld { get; set; }
         public ImmobilienHypothekDto ImmobilienHypothek { get; set; }
