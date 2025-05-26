@@ -10,6 +10,8 @@ namespace BE.Application.ImmobilienHausgelder.Commands.UpdateHausgeld
     public class UpdateImmobilienHausgeldByIdCommandHandler
         (ILogger<UpdateImmobilienHausgeldByIdCommandHandler> logger,
         IMapper mapper,
+        IBruttomietrenditeRepository bruttomietrenditeRepository,
+        IImmobilienOverviewRepository overviewRepository,
         IImmobilienHausgeldRepository hausgeldRepository) : IRequestHandler<UpdateImmobilienHausgeldByIdCommand>
     {
         public async Task Handle(UpdateImmobilienHausgeldByIdCommand request, CancellationToken cancellationToken)
@@ -25,6 +27,12 @@ namespace BE.Application.ImmobilienHausgelder.Commands.UpdateHausgeld
 
             mapper.Map(request, hausgeld);
 
+            var bruttomietrendite = await bruttomietrenditeRepository.GetByIdAsync(request.Id);
+            bruttomietrendite.UmlagefaehigesHausgeld.InProzent = hausgeld.UmlagefaehigesHausgeld.InProzent;
+            bruttomietrendite.UmlagefaehigesHausgeld.ProMonat = hausgeld.UmlagefaehigesHausgeld.ProMonat;
+            bruttomietrendite.UmlagefaehigesHausgeld.ProJahr = hausgeld.UmlagefaehigesHausgeld.ProJahr;
+
+            await bruttomietrenditeRepository.SaveChanges();
             await hausgeldRepository.SaveChanges();
         }
     }

@@ -22,7 +22,6 @@ namespace BE.Application.Bruttomietrenditen.Commands.UpdateBruttomietrendite
             {
                 throw new NotFoundException(nameof(Bruttomietrendite), request.Id.ToString());
             }
-
             mapper.Map(request, bruttomietrendite);
 
             await bruttomietrenditeRepository.SaveChanges();

@@ -24,9 +24,6 @@ namespace BE.Application.ImmobilienTypes.Commands.UpdateTypes
             }
 
             mapper.Map(request, type);
-            //restaurant.Name = request.Name;
-            //restaurant.Description = request.Description;
-            //restaurant.HasDelivery = request.HasDelivery;
 
             await typeRepository.SaveChanges();
         }

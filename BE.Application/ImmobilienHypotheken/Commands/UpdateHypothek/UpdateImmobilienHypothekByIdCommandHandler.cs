@@ -11,6 +11,7 @@ namespace BE.Application.ImmobilienHypotheken.Commands.UpdateHypothek
         (ILogger<UpdateImmobilienHypothekByIdCommandHandler> logger,
         IMapper mapper,
         IImmobilienOverviewRepository overviewRepository,
+        IBruttomietrenditeRepository bruttomietrenditeRepository,
         IImmobilienHypothekRepository hypothekRepository) : IRequestHandler<UpdateImmobilienHypothekByIdCommand>
     {
         public async Task Handle(UpdateImmobilienHypothekByIdCommand request, CancellationToken cancellationToken)
@@ -31,8 +32,12 @@ namespace BE.Application.ImmobilienHypotheken.Commands.UpdateHypothek
             var overview = await overviewRepository.GetByIdAsync(request.Id);
             overview.Kaufpreis = hypothek.Kaufpreis;
 
-            await overviewRepository.SaveChanges();
+            var bruttomietrendite = await bruttomietrenditeRepository.GetByIdAsync(request.Id);
+            bruttomietrendite.Kaufpreis = hypothek.Kaufpreis;
+
+            await bruttomietrenditeRepository.SaveChanges();
             await hypothekRepository.SaveChanges();
+            await overviewRepository.SaveChanges();
         }
     }
 }
