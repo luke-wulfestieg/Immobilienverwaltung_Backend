@@ -8,9 +8,9 @@
             Tilgung = tilgung;
             Sondertilgung = sonderTilgung;
             GesamtKreditbelastung = new ProzentMonatJahr(
-                (zinsen.InProzent + tilgung.InProzent + sonderTilgung.InProzent), 
-                (zinsen.ProMonat + tilgung.ProMonat + sonderTilgung.ProMonat), 
-                (zinsen.ProJahr + tilgung.ProJahr + sonderTilgung.ProJahr));
+                (zinsen.InProzent + tilgung.InProzent), 
+                (zinsen.ProMonat + tilgung.ProMonat), 
+                (zinsen.ProJahr + tilgung.ProJahr));
         }
 
         public Kreditbelastung(){}

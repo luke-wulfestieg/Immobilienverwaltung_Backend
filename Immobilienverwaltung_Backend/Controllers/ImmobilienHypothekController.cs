@@ -42,7 +42,7 @@ namespace Immobilienverwaltung_Backend.Controllers
             return hypothek == null ? NotFound() : Ok(hypothek);
         }
 
-        [HttpPost("{overviewId}/hypohek")]
+        [HttpPost("{overviewId}/hypothek")]
         public async Task<IActionResult> Create([FromRoute] int overviewId, [FromBody] CreateImmobilienHypothekCommand command)
         {
             command.ImmobilienOverviewId = overviewId;

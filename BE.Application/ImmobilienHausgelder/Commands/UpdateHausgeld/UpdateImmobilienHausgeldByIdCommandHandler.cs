@@ -31,6 +31,11 @@ namespace BE.Application.ImmobilienHausgelder.Commands.UpdateHausgeld
             bruttomietrendite.UmlagefaehigesHausgeld.InProzent = hausgeld.UmlagefaehigesHausgeld.InProzent;
             bruttomietrendite.UmlagefaehigesHausgeld.ProMonat = hausgeld.UmlagefaehigesHausgeld.ProMonat;
             bruttomietrendite.UmlagefaehigesHausgeld.ProJahr = hausgeld.UmlagefaehigesHausgeld.ProJahr;
+            
+            bruttomietrendite.Warmmiete.ProMonat = bruttomietrendite.Kaltmiete.ProMonat + hausgeld.UmlagefaehigesHausgeld.ProMonat;
+            bruttomietrendite.Warmmiete.ProJahr = (bruttomietrendite.Kaltmiete.ProMonat + hausgeld.UmlagefaehigesHausgeld.ProMonat) * 12;
+            bruttomietrendite.Warmmiete.ProQuadratmeter = bruttomietrendite.Warmmiete.ProQuadratmeter = bruttomietrendite.Warmmiete.ProMonat / Convert.ToDecimal(bruttomietrendite.Wohnflaeche);
+            ;
 
             await bruttomietrenditeRepository.SaveChanges();
             await hausgeldRepository.SaveChanges();
