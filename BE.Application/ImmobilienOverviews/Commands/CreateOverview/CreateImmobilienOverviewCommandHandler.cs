@@ -15,9 +15,12 @@ namespace BE.Application.ImmobilienOverviews.Commands.CreateOverview
     IImmobilienTypeRepository typeRepository,
     IImmobilienHausgeldRepository hausgeldRepository,
     IImmobilienHypothekRepository hypothekRepository,
-    IBruttomietrenditeRepository bruttomietrenditeRepository)
+    IBruttomietrenditeRepository bruttomietrenditeRepository,
+    IRuecklagenRepository ruecklagenRepository)
     : IRequestHandler<CreateImmobilienOverviewCommand, int>
     {
+        Bruttomietrendite? bruttomietrenditeTest;
+
         public async Task<int> Handle(CreateImmobilienOverviewCommand request, CancellationToken cancellationToken)
         {
             logger.LogInformation("Creating ImmobilienOverview {ImmobilienOverview}", request);
@@ -32,9 +35,11 @@ namespace BE.Application.ImmobilienOverviews.Commands.CreateOverview
             overview.ImmobilienType = type;
             var overviewId = await overviewRepository.Create(overview);
 
+
             await CreateDefaultHausgeld(request, overview, overviewId);
             await CreateDefaultHypothek(request, overview, overviewId);
             await CreateDefaultBruttomietrendite(request, overview, overviewId);
+            await CreateDefaultRuecklage(request, overview, bruttomietrenditeTest, overviewId);
             return overviewId;
         }
 
@@ -61,6 +66,8 @@ namespace BE.Application.ImmobilienOverviews.Commands.CreateOverview
                     BruttomietrenditeBetrag = Convert.ToDouble(((KaltmieteProMonat * 12) / overview.Kaufpreis) * 100) 
                 };
             bruttomietrendite.ImmobilienOverviewId = overviewId;
+
+            bruttomietrenditeTest = bruttomietrendite;
 
             return await bruttomietrenditeRepository.Create(bruttomietrendite);
         }
@@ -146,6 +153,27 @@ namespace BE.Application.ImmobilienOverviews.Commands.CreateOverview
                 }
             }
             return restschuld;
+        }
+
+        private async Task<int> CreateDefaultRuecklage(CreateImmobilienOverviewCommand request, ImmobilienOverview overview, Bruttomietrendite bruttomietrendite, int overviewId)
+        {
+            var wohnflaeche = Convert.ToDecimal(overview.Wohnflaeche);
+            var kalmiete = bruttomietrendite.Kaltmiete;
+            var instandhaltung = new QuadratmeterMonatJahr(1m, 1m *  wohnflaeche, (1m * wohnflaeche) * 12);
+            var mietausfall = new ProzentMonatJahr(3m, kalmiete.ProMonat * 0.03m, kalmiete.ProJahr * 0.03m);
+            var ruecklagen = new MonatJahr((instandhaltung.ProMonat + mietausfall.ProMonat), (instandhaltung.ProJahr + mietausfall.ProJahr));
+
+            var ruecklage = request.Ruecklage != null
+                ? mapper.Map<Ruecklage>(request.Ruecklage)
+                : new Ruecklage
+                {
+                    Instandhaltung = instandhaltung,
+                    Mietausfall = mietausfall,
+                    RuecklagenBetrag = ruecklagen
+                };
+            ruecklage.ImmobilienOverviewId = overviewId;
+
+            return await ruecklagenRepository.Create(ruecklage);
         }
     }
 }

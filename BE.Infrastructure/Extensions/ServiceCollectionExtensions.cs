@@ -25,6 +25,7 @@ namespace BE.Infrastructure.Extensions
             services.AddScoped<IImmobilienHausgeldRepository, ImmobilienHausgeldRepository>();
             services.AddScoped<IImmobilienHypothekRepository, ImmobilienHypothekRepository>();
             services.AddScoped<IBruttomietrenditeRepository, BruttomietrenditeRepository>();
+            services.AddScoped<IRuecklagenRepository, RuecklagenRepository>();
 
         }
     }

@@ -1,4 +1,5 @@
 ﻿using BE.Domain.Entities;
+using BE.Domain.Entities.Hypothek;
 using BE.Domain.Exceptions;
 using BE.Domain.Repositories;
 using MediatR;
@@ -20,7 +21,7 @@ namespace BE.Application.ImmobilienHypotheken.Commands.DeleteHypothek
 
             if (hypothek is null)
             {
-                throw new NotFoundException(nameof(ImmobilienType), request.Id.ToString());
+                throw new NotFoundException(nameof(ImmobilienHypothek), request.Id.ToString());
             }
 
             await hypothekRepository.Delete(hypothek);

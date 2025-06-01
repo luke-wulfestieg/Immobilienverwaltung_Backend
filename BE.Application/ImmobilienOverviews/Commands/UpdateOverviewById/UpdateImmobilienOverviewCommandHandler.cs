@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BE.Application.ImmobilienOverviews.Commands.CreateOverview;
 using BE.Domain.Entities;
 using BE.Domain.Entities.Hypothek;
 using BE.Domain.Exceptions;
@@ -15,7 +16,8 @@ namespace BE.Application.ImmobilienOverviews.Commands.UpdateOverviewById
             IImmobilienTypeRepository typeRepository,
             IImmobilienHausgeldRepository hausgeldRepository,
             IImmobilienHypothekRepository hypothekRepository,
-            IBruttomietrenditeRepository bruttomietrenditeRepository)
+            IBruttomietrenditeRepository bruttomietrenditeRepository,
+            IRuecklagenRepository ruecklagenRepository)
         : IRequestHandler<UpdateImmobilienOverviewCommand>
     {
         public async Task Handle(UpdateImmobilienOverviewCommand request, CancellationToken cancellationToken)
@@ -84,13 +86,24 @@ namespace BE.Application.ImmobilienOverviews.Commands.UpdateOverviewById
             bruttomietrendite.KaufpreisFaktor = Convert.ToDouble(overview.Kaufpreis / (kaltmieteProMonat * 12));
             bruttomietrendite.BruttomietrenditeBetrag = Convert.ToDouble((kaltmieteProMonat * 12) / overview.Kaufpreis) * 100;
 
+            var ruecklage = await ruecklagenRepository.GetByIdAsync(overview.ImmobilienHausgeld.Id)
+                ?? throw new NotFoundException(nameof(Ruecklage), overview.ImmobilienHausgeld.Id.ToString());
 
+            var instandhaltung = new QuadratmeterMonatJahr(ruecklage.Instandhaltung.ProQuadratmeter, ruecklage.Instandhaltung.ProQuadratmeter * Convert.ToDecimal(overview.Wohnflaeche), (ruecklage.Instandhaltung.ProQuadratmeter * Convert.ToDecimal(overview.Wohnflaeche)) * 12);
+            var mietausfall = new ProzentMonatJahr(ruecklage.Mietausfall.InProzent, kaltmieteProMonat * (ruecklage.Mietausfall.InProzent / 100), (kaltmieteProMonat * 12) * (ruecklage.Mietausfall.InProzent / 100));
+            var ruecklagen = new MonatJahr(instandhaltung.ProMonat + mietausfall.ProMonat, instandhaltung.ProJahr + mietausfall.ProJahr);
+
+
+            ruecklage.Instandhaltung = instandhaltung;
+            ruecklage.Mietausfall = mietausfall;
+            ruecklage.RuecklagenBetrag = ruecklagen;
 
 
             // Save changes to both
             await hypothekRepository.SaveChanges();
             await hausgeldRepository.SaveChanges();
             await bruttomietrenditeRepository.SaveChanges();
+            await ruecklagenRepository.SaveChanges();
             await overviewRepository.SaveChanges();
 
         }

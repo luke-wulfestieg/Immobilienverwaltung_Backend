@@ -7,10 +7,11 @@ using Microsoft.Extensions.Logging;
 
 namespace BE.Application.Bruttomietrenditen.Commands.UpdateBruttomietrendite
 {
-    internal class UpdateBruttomietrenditeByIdCommandHandler
+    public class UpdateBruttomietrenditeByIdCommandHandler
          (ILogger<UpdateBruttomietrenditeByIdCommandHandler> logger,
         IMapper mapper,
-        IBruttomietrenditeRepository bruttomietrenditeRepository) : IRequestHandler<UpdateBruttomietrenditeByIdCommand>
+        IBruttomietrenditeRepository bruttomietrenditeRepository,
+        IRuecklagenRepository ruecklagenRepository) : IRequestHandler<UpdateBruttomietrenditeByIdCommand>
     {
         public async Task Handle(UpdateBruttomietrenditeByIdCommand request, CancellationToken cancellationToken)
         {
@@ -24,6 +25,19 @@ namespace BE.Application.Bruttomietrenditen.Commands.UpdateBruttomietrendite
             }
             mapper.Map(request, bruttomietrendite);
 
+            var ruecklagen = await ruecklagenRepository.GetByIdAsync(request.Id);
+            var mietausfallProzent = ruecklagen.Mietausfall.InProzent;
+           
+            ruecklagen.Mietausfall = new ProzentMonatJahr(mietausfallProzent,
+                (mietausfallProzent / 100) * bruttomietrendite.Kaltmiete.ProMonat,
+                (mietausfallProzent / 100) * bruttomietrendite.Kaltmiete.ProJahr);
+
+            var ruecklagenBetragPM = ruecklagen.Instandhaltung.ProMonat + ruecklagen.Mietausfall.ProMonat;
+            var ruecklagenBetragPA = ruecklagen.Instandhaltung.ProJahr + ruecklagen.Mietausfall.ProJahr;
+
+            ruecklagen.RuecklagenBetrag = new MonatJahr(ruecklagenBetragPM, ruecklagenBetragPA);
+
+            await ruecklagenRepository.SaveChanges();
             await bruttomietrenditeRepository.SaveChanges();
         }
     }

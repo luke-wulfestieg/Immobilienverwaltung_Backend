@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BE.Domain.Entities;
 using BE.Domain.Entities.Hypothek;
 using BE.Domain.Exceptions;
 using BE.Domain.Repositories;

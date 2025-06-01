@@ -11,6 +11,7 @@ namespace BE.Infrastructure.Persistence
         internal DbSet<ImmobilienHausgeld> ImmobilienHausgeld { get; set; }
         internal DbSet<ImmobilienHypothek> ImmobilienHypotheken { get; set; }
         internal DbSet<Bruttomietrendite> Bruttomietrenditen { get; set; }
+        internal DbSet<Ruecklage> Ruecklagen { get; set; }
 
         public ImmobilienDbContext(DbContextOptions<ImmobilienDbContext> options)
             : base(options)
@@ -48,6 +49,12 @@ namespace BE.Infrastructure.Persistence
                 .HasForeignKey<Bruttomietrendite>(h => h.ImmobilienOverviewId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<ImmobilienOverview>()
+                .HasOne(o => o.Ruecklage)
+                .WithOne(h => h.ImmobilienOverview)
+                .HasForeignKey<Ruecklage>(h => h.ImmobilienOverviewId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             // Kaufnebenkosten is still an owned type (with nested value objects)
             modelBuilder.Entity<ImmobilienHypothek>().OwnsOne(h => h.Kaufnebenkosten);
 
@@ -62,6 +69,11 @@ namespace BE.Infrastructure.Persistence
             modelBuilder.Entity<Bruttomietrendite>().OwnsOne(h => h.UmlagefaehigesHausgeld);
             modelBuilder.Entity<Bruttomietrendite>().OwnsOne(h => h.Kaltmiete);
             modelBuilder.Entity<Bruttomietrendite>().OwnsOne(h => h.Warmmiete);
+
+            modelBuilder.Entity<Ruecklage>().OwnsOne(h => h.Instandhaltung);
+            modelBuilder.Entity<Ruecklage>().OwnsOne(h => h.Mietausfall);
+            modelBuilder.Entity<Ruecklage>().OwnsOne(h => h.RuecklagenBetrag);
+
 
         }
     }

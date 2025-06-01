@@ -1,6 +1,7 @@
 ﻿using BE.Application.Bruttomietrenditen.DTOs;
 using BE.Application.ImmobilienHausgelder.DTOs;
 using BE.Application.ImmobilienHypotheken.DTOs;
+using BE.Application.Ruecklagen.DTOs;
 using MediatR;
 
 namespace BE.Application.ImmobilienOverviews.Commands.CreateOverview
@@ -16,6 +17,7 @@ namespace BE.Application.ImmobilienOverviews.Commands.CreateOverview
         public ImmobilienHausgeldDto? ImmobilienHausgeld { get; set; } = default!;
         public ImmobilienHypothekDto? ImmobilienHypothek { get; set; } = default!;
         public BruttomietrenditeDto? Bruttomietrendite { get; set; } = default!;
+        public RuecklagenDto? Ruecklage {  get; set; } = default!;
     }
 
 }

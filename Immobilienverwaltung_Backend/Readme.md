@@ -5,3 +5,4 @@ _________________________________________________________
 Wähle BE.Infrastructure aus
 add-migration "name"
 update-database
+remove-migration
