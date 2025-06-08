@@ -11,7 +11,10 @@ namespace BE.Application.Ruecklagen.Commands.UpdateRuecklagen
         IMapper mapper,
         IImmobilienOverviewRepository overviewRepository,
         IBruttomietrenditeRepository bruttomietrenditeRepository,
-        IRuecklagenRepository ruecklagenRepository) : IRequestHandler<UpdateRuecklagenCommand>
+        IRuecklagenRepository ruecklagenRepository,
+        IGesamtbelastungRepository gesamtbelastungRepository, 
+        IImmobilienHausgeldRepository hausgeldRepository,
+        IImmobilienHypothekRepository hypothekRepository) : IRequestHandler<UpdateRuecklagenCommand>
     {
         public async Task Handle(UpdateRuecklagenCommand request, CancellationToken cancellationToken)
         {
@@ -39,6 +42,20 @@ namespace BE.Application.Ruecklagen.Commands.UpdateRuecklagen
             ruecklage.Mietausfall = mietausfall;
             ruecklage.RuecklagenBetrag = ruecklagen;
 
+            var gesamtbelastung = await gesamtbelastungRepository.GetByIdAsync(request.Id);
+            if (gesamtbelastung == null)
+            {
+                throw new NotFoundException(nameof(Gesamtbelastung), request.Id.ToString());
+            }
+            var hypothek = await hypothekRepository.GetByIdAsync(request.Id);
+            var hausgeld = await hausgeldRepository.GetByIdAsync(request.Id);
+            gesamtbelastung.Kreditbelastung = new MonatJahr(hypothek.Kreditbelastung.GesamtKreditbelastung.ProMonat, hypothek.Kreditbelastung.GesamtKreditbelastung.ProJahr);
+            gesamtbelastung.Ruecklagen = new MonatJahr(ruecklage.RuecklagenBetrag.ProMonat, ruecklage.RuecklagenBetrag.ProJahr);
+            gesamtbelastung.NichtUmlagefaehigesHausgeld = new MonatJahr(hausgeld.NichtUmlagefaehigesHausgeld.ProMonat, hausgeld.NichtUmlagefaehigesHausgeld.ProJahr);
+            gesamtbelastung.GesamtbelastungBetrag = new MonatJahr((hypothek.Kreditbelastung.GesamtKreditbelastung.ProMonat + ruecklage.RuecklagenBetrag.ProMonat + hausgeld.NichtUmlagefaehigesHausgeld.ProMonat), (hypothek.Kreditbelastung.GesamtKreditbelastung.ProJahr + ruecklage.RuecklagenBetrag.ProJahr + hausgeld.NichtUmlagefaehigesHausgeld.ProJahr));
+
+
+            await gesamtbelastungRepository.SaveChanges();
             await ruecklagenRepository.SaveChanges();
         }
     }

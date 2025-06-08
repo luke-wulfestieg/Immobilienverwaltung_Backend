@@ -28,7 +28,8 @@ namespace BE.Infrastructure.Repositories
                 .Include(o => o.ImmobilienHausgeld)
                 .Include(o => o.ImmobilienHypothek)
                 .Include(o => o.Bruttomietrendite)
-                .Include(o => o.Ruecklage).ToListAsync();
+                .Include(o => o.Ruecklage)
+                .Include(o => o.Gesamtbelastung).ToListAsync();
 
 
             return overviews;
@@ -42,6 +43,7 @@ namespace BE.Infrastructure.Repositories
                 .Include(r => r.ImmobilienHypothek)
                 .Include(o => o.Bruttomietrendite)
                 .Include(o => o.Ruecklage)
+                .Include(o => o.Gesamtbelastung)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             return overview;

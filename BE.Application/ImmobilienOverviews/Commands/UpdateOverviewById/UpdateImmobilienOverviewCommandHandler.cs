@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using BE.Application.ImmobilienOverviews.Commands.CreateOverview;
 using BE.Domain.Entities;
 using BE.Domain.Entities.Hypothek;
 using BE.Domain.Exceptions;
@@ -17,11 +16,14 @@ namespace BE.Application.ImmobilienOverviews.Commands.UpdateOverviewById
             IImmobilienHausgeldRepository hausgeldRepository,
             IImmobilienHypothekRepository hypothekRepository,
             IBruttomietrenditeRepository bruttomietrenditeRepository,
-            IRuecklagenRepository ruecklagenRepository)
+            IRuecklagenRepository ruecklagenRepository,
+            IGesamtbelastungRepository gesamtbelastungRepository)
         : IRequestHandler<UpdateImmobilienOverviewCommand>
     {
         public async Task Handle(UpdateImmobilienOverviewCommand request, CancellationToken cancellationToken)
         {
+            ProzentMonatJahr? testHypothek;
+
             var overview = await overviewRepository.GetByIdAsync(request.Id)
                 ?? throw new NotFoundException(nameof(ImmobilienOverview), request.Id.ToString());
 
@@ -66,6 +68,8 @@ namespace BE.Application.ImmobilienOverviews.Commands.UpdateOverviewById
             // Pass real object
             hypothek = UpdateHypothek(overview, hypothek);
 
+            testHypothek = hypothek.Kreditbelastung.GesamtKreditbelastung;
+
             var bruttomietrendite = await bruttomietrenditeRepository.GetByIdAsync(overview.Bruttomietrendite.Id)
             ?? throw new NotFoundException(nameof(Bruttomietrendite), overview.Bruttomietrendite.Id.ToString());
 
@@ -98,12 +102,22 @@ namespace BE.Application.ImmobilienOverviews.Commands.UpdateOverviewById
             ruecklage.Mietausfall = mietausfall;
             ruecklage.RuecklagenBetrag = ruecklagen;
 
+            var gesamtbelastung = await gesamtbelastungRepository.GetByIdAsync(overview.Gesamtbelastung.Id)
+                ?? throw new NotFoundException(nameof(Gesamtbelastung), overview.Gesamtbelastung.Id.ToString());
+
+            
+            gesamtbelastung.Kreditbelastung = new MonatJahr(testHypothek.ProMonat, testHypothek.ProJahr);
+            gesamtbelastung.Ruecklagen = ruecklage.RuecklagenBetrag;
+            gesamtbelastung.NichtUmlagefaehigesHausgeld = new MonatJahr(hausgeld.NichtUmlagefaehigesHausgeld.ProMonat, hausgeld.NichtUmlagefaehigesHausgeld.ProJahr);
+            gesamtbelastung.GesamtbelastungBetrag = new MonatJahr((testHypothek.ProMonat + ruecklage.RuecklagenBetrag.ProMonat + hausgeld.NichtUmlagefaehigesHausgeld.ProMonat), (testHypothek.ProJahr + ruecklage.RuecklagenBetrag.ProJahr + hausgeld.NichtUmlagefaehigesHausgeld.ProJahr));
+
 
             // Save changes to both
             await hypothekRepository.SaveChanges();
             await hausgeldRepository.SaveChanges();
             await bruttomietrenditeRepository.SaveChanges();
             await ruecklagenRepository.SaveChanges();
+            await gesamtbelastungRepository.SaveChanges();
             await overviewRepository.SaveChanges();
 
         }
@@ -140,8 +154,7 @@ namespace BE.Application.ImmobilienOverviews.Commands.UpdateOverviewById
             hypothek.Sollzinsbindung = sollzinsbindung;
             hypothek.Kreditbelastung = kreditbelastung;
             hypothek.Restschuld = restschuld;
-            hypothek.ImmobilienOverviewId = overview.Id;
-
+            hypothek.ImmobilienOverviewId = overview.Id;            
             return hypothek;
         }
 

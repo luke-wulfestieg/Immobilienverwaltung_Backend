@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BE.Application.Gesamtbelastungen.Commands.CreateGesamtbelastung;
 using BE.Domain.Entities;
 using BE.Domain.Entities.Hypothek;
 using BE.Domain.Exceptions;
@@ -16,10 +17,14 @@ namespace BE.Application.ImmobilienOverviews.Commands.CreateOverview
     IImmobilienHausgeldRepository hausgeldRepository,
     IImmobilienHypothekRepository hypothekRepository,
     IBruttomietrenditeRepository bruttomietrenditeRepository,
-    IRuecklagenRepository ruecklagenRepository)
+    IRuecklagenRepository ruecklagenRepository,
+    IGesamtbelastungRepository gesamtbelastungRepository)
     : IRequestHandler<CreateImmobilienOverviewCommand, int>
     {
         Bruttomietrendite? bruttomietrenditeTest;
+        ImmobilienHypothek? hypothekTest;
+        Ruecklage? ruecklageTest;
+        ImmobilienHausgeld? hausgeldTest;
 
         public async Task<int> Handle(CreateImmobilienOverviewCommand request, CancellationToken cancellationToken)
         {
@@ -39,8 +44,26 @@ namespace BE.Application.ImmobilienOverviews.Commands.CreateOverview
             await CreateDefaultHausgeld(request, overview, overviewId);
             await CreateDefaultHypothek(request, overview, overviewId);
             await CreateDefaultBruttomietrendite(request, overview, overviewId);
-            await CreateDefaultRuecklage(request, overview, bruttomietrenditeTest, overviewId);
+            await CreateDefaultRuecklage(request, overview, bruttomietrenditeTest , overviewId);
+            await CreateDefaultGesamtbelastung(request, overview, overviewId);
             return overviewId;
+        }
+
+        private async Task<int> CreateDefaultGesamtbelastung(CreateImmobilienOverviewCommand request, ImmobilienOverview overview, int overviewId)
+        {
+            var gesamtbelastung = request.Gesamtbelastung != null
+                ? mapper.Map<Gesamtbelastung>(request.Gesamtbelastung)
+                : new Gesamtbelastung
+                {
+                    Kreditbelastung = new MonatJahr(hypothekTest.Kreditbelastung.GesamtKreditbelastung.ProMonat, hypothekTest.Kreditbelastung.GesamtKreditbelastung.ProJahr),
+                    Ruecklagen = new MonatJahr(ruecklageTest.RuecklagenBetrag.ProMonat, ruecklageTest.RuecklagenBetrag.ProJahr),
+                    NichtUmlagefaehigesHausgeld = new MonatJahr(hausgeldTest.NichtUmlagefaehigesHausgeld.ProMonat, hausgeldTest.NichtUmlagefaehigesHausgeld.ProJahr),
+                    GesamtbelastungBetrag = new MonatJahr((hypothekTest.Kreditbelastung.GesamtKreditbelastung.ProMonat + ruecklageTest.RuecklagenBetrag.ProMonat + hausgeldTest.NichtUmlagefaehigesHausgeld.ProMonat), (hypothekTest.Kreditbelastung.GesamtKreditbelastung.ProJahr + ruecklageTest.RuecklagenBetrag.ProJahr + hausgeldTest.NichtUmlagefaehigesHausgeld.ProJahr))
+                };
+            gesamtbelastung.ImmobilienOverviewId = overviewId;
+
+
+            return await gesamtbelastungRepository.Create(gesamtbelastung);
         }
 
         private async Task<int> CreateDefaultBruttomietrendite(CreateImmobilienOverviewCommand request, ImmobilienOverview overview, int overviewId)
@@ -87,7 +110,7 @@ namespace BE.Application.ImmobilienOverviews.Commands.CreateOverview
                     NichtUmlagefaehigesHausgeld = new ProzentMonatJahr(40, NichtUmlagefaehigProMonat, (NichtUmlagefaehigProMonat * 12))
                 };
                 hausgeld.ImmobilienOverviewId = overviewId;
-
+            hausgeldTest = hausgeld;
             return await hausgeldRepository.Create(hausgeld);
         }
 
@@ -123,7 +146,9 @@ namespace BE.Application.ImmobilienOverviews.Commands.CreateOverview
                     Kreditbelastung = kreditbelastung,
                     Restschuld = restschuld
                 };
+
             hypothek.ImmobilienOverviewId = overviewId;
+            hypothekTest = hypothek;
 
             return await hypothekRepository.Create(hypothek);
         }
@@ -172,6 +197,8 @@ namespace BE.Application.ImmobilienOverviews.Commands.CreateOverview
                     RuecklagenBetrag = ruecklagen
                 };
             ruecklage.ImmobilienOverviewId = overviewId;
+
+            ruecklageTest = ruecklage;
 
             return await ruecklagenRepository.Create(ruecklage);
         }

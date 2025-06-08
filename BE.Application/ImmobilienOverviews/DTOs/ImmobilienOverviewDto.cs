@@ -1,4 +1,5 @@
 ﻿using BE.Application.Bruttomietrenditen.DTOs;
+using BE.Application.Gesamtbelastungen.DTOs;
 using BE.Application.ImmobilienHausgelder.DTOs;
 using BE.Application.ImmobilienHypotheken.DTOs;
 using BE.Application.ImmobilienTypes.DTOs;
@@ -19,6 +20,7 @@ namespace BE.Application.ImmobilienOverviews.DTOs
         public ImmobilienHypothekDto ImmobilienHypothek { get; set; }
         public BruttomietrenditeDto Bruttomietrendite { get; set; }
         public RuecklagenDto Ruecklage { get; set; }
+        public GesamtbelastungDto Gesamtbelastung { get; set; }
 
     }
 }

@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace BE.Application.ImmobilienHausgelder.Commands.GetAllHausgeld
 {
-    internal class GetAllImmobilienHausgeldCommandHandler
+    public class GetAllImmobilienHausgeldCommandHandler
         (ILogger<GetAllImmobilienHausgeldCommandHandler> logger,
         IMapper mapper,
         IImmobilienHausgeldRepository hausgeldRepository) : IRequestHandler<GetAllImmobilienHausgeldCommand, IEnumerable<ImmobilienHausgeldDto>>

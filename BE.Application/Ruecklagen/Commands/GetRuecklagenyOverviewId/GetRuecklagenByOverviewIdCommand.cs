@@ -1,5 +1,4 @@
-﻿using BE.Application.ImmobilienHypotheken.DTOs;
-using BE.Application.Ruecklagen.DTOs;
+﻿using BE.Application.Ruecklagen.DTOs;
 using MediatR;
 
 namespace BE.Application.Ruecklagen.Commands.GetRuecklagenyOverviewId

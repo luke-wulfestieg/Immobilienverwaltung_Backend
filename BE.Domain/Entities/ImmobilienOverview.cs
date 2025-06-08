@@ -15,6 +15,7 @@ namespace BE.Domain.Entities
         public ImmobilienHypothek ImmobilienHypothek { get; set; }
         public Bruttomietrendite Bruttomietrendite { get; set; }
         public Ruecklage Ruecklage { get; set; }
+        public Gesamtbelastung Gesamtbelastung { get; set; }
 
     }
 }

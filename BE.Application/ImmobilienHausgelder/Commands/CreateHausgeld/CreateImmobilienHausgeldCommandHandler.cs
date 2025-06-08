@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace BE.Application.ImmobilienHausgelder.Commands.CreateHausgeld
 {
-    internal class CreateImmobilienHausgeldCommandHandler
+    public class CreateImmobilienHausgeldCommandHandler
         (ILogger<CreateImmobilienHausgeldCommandHandler> logger,
         IMapper mapper,
         IImmobilienHausgeldRepository hausgeldRepository,

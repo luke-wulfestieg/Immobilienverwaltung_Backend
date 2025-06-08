@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace BE.Application.Bruttomietrenditen.Commands.CreateBruttomietrendite
 {
-    internal class CreateBruttomietrenditeCommandHandler
+    public class CreateBruttomietrenditeCommandHandler
         (ILogger<CreateBruttomietrenditeCommandHandler> logger,
         IMapper mapper,
         IBruttomietrenditeRepository bruttomietrenditenRepository,
